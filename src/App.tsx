@@ -1,7 +1,7 @@
-import { Route, RouterProvider, createBrowserRouter, createRoutesFromElements } from 'react-router-dom'
+import { Route, RouterProvider, createHashRouter, createRoutesFromElements } from 'react-router-dom'
 import { AuthLayout, ErrorPage, LogIn, SignIn, TodoList } from './routes'
 
-const router = createBrowserRouter(
+const router = createHashRouter(
   createRoutesFromElements(<>
     <Route path='/' element={<TodoList />} />
     <Route element={<AuthLayout />}>
