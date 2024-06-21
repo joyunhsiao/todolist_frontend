@@ -5,8 +5,8 @@ const router = createBrowserRouter(
   createRoutesFromElements(<>
     <Route path='/' element={<TodoList />} />
     <Route element={<AuthLayout />}>
-      <Route path='logIn' element={<LogIn />} />
-      <Route path='signIn' element={<SignIn />} />
+      <Route path='log_in' element={<LogIn />} />
+      <Route path='sign_in' element={<SignIn />} />
     </Route>
     <Route path='*' element={<ErrorPage />} />
   </>)
