@@ -30,6 +30,9 @@
     border: none
     cursor: pointer
 
+.todolist_main
+  padding-bottom: 16px
+
 .addTodo_box
   display: flex
   width: 500px
@@ -37,7 +40,7 @@
   border-radius: 10px
   box-shadow: colors.$box-shadow
   padding: 4px
-  margin: 0 auto 60px
+  margin: 0 auto
 
 .addTodo_input
   width: 100%
@@ -65,8 +68,87 @@
   line-height: 23px
   color: colors.$text-primary
   text-align: center
-  margin-bottom: 16px
+  margin: 60px 0 16px 0
 
 .noTodo_img
   display: block
   margin: 0 auto
+
+.todolist_table
+  width: 500px
+  background-color: colors.$white
+  border-radius: 10px
+  box-shadow: colors.$box-shadow
+  margin: 16px auto
+
+.todolist_table_header
+  display: flex
+  position: relative
+  &::after
+    content: ''
+    position: absolute
+    width: 100%
+    left: 0
+    bottom: 0
+    border-bottom: 2px solid colors.$divider-secondary
+  li
+    flex-grow: 1
+    color: colors.$text-secondary
+    font-size: 14px
+    font-weight: 700
+    line-height: 20px
+    text-align: center
+    padding: 16px 0 16px 0
+  li.active
+    color: colors.$text-primary
+    position: relative
+    &::after
+      content: ''
+      position: absolute
+      width: 100%
+      left: 0
+      bottom: 0
+      border-bottom: 2px solid colors.$text-primary
+      z-index: 5
+
+.todolist_table_body
+  padding: 24px 16px 0 24px
+  li
+    display: flex
+    align-items: flex-start
+  .list_main
+    width: 100%
+    padding-bottom: 15px
+    margin-bottom: 16px
+    border-bottom: 1px solid colors.$divider-primary
+  label
+    display: flex
+    font-size: 14px
+    font-weight: 400
+    line-height: 20px
+    color: colors.$text-primary
+    cursor: pointer
+    img
+      display: block
+      margin-right: 16px
+  input
+    display: none
+  button
+    background-color: transparent
+    padding: 1px 0 // Fix spacing of button element styles
+    margin: 2px 2px 0 16px
+    border: none
+    cursor: pointer
+
+.todolist_table_footer
+  display: flex
+  justify-content: space-between
+  padding: 8px 48px 32px 24px
+  font-size: 14px
+  font-weight: 400
+  line-height: 20px
+  p
+    color: colors.$text-primary
+  a
+    color: colors.$text-secondary
+    text-decoration: none
