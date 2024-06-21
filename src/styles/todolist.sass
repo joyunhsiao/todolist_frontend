@@ -1,0 +1,70 @@
+@use 'colors'
+  
+.todolist_container
+  background: colors.$background-homepage
+  height: 100vh
+
+.todolist_header
+  display: flex
+  justify-content: space-between
+  align-items: center
+  padding: 16px 24px
+  margin-bottom: 40px
+  img
+    margin-left: 10px
+
+.todolist_headerRight
+  display: flex
+  p
+    font-size: 16px
+    font-weight: 700
+    line-height: 23px
+    color: colors.$text-primary
+  a
+    display: block
+    font-size: 16px
+    line-height: 23px
+    margin-left: 24px
+    color: colors.$text-primary
+    text-decoration: none
+
+.addTodo_box
+  display: flex
+  width: 500px
+  background-color: colors.$white
+  border-radius: 10px
+  box-shadow: colors.$box-shadow
+  padding: 4px
+  margin: 0 auto 60px
+
+.addTodo_input
+  width: 100%
+  font-size: 16px
+  font-weight: 400
+  line-height: 23px
+  color: colors.$text-primary
+  outline: none
+  border: none
+  padding: 8px
+  &::placeholder
+    color: colors.$text-secondary
+
+.addTodo_button
+  padding: 0
+  margin: 0
+  border: none
+  background-color: transparent
+  cursor: pointer
+  img
+    display: block
+
+.noTodo_text
+  font-style: 16px
+  line-height: 23px
+  color: colors.$text-primary
+  text-align: center
+  margin-bottom: 16px
+
+.noTodo_img
+  display: block
+  margin: 0 auto
