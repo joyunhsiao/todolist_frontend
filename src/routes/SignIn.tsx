@@ -1,7 +1,8 @@
 // SignIn.tsx
+import axios from 'axios'
 import React, { useState } from 'react'
-import { StyledInput } from '../components'
 import { useNavigate } from 'react-router-dom'
+import { StyledInput } from '../components'
 
 export const SignIn: React.FC = () => {
   const navigate = useNavigate()
@@ -21,7 +22,7 @@ export const SignIn: React.FC = () => {
   const onPasswordChange = (value: string) => setPassword(value)
   const onPasswordAgainChange = (value: string) => setPasswordAgain(value)
 
-  const handleLogin = () => {
+  const handleSignIn = () => {
     let hasError = false
     setEmailError('')
     setNickNameError('')
@@ -46,7 +47,25 @@ export const SignIn: React.FC = () => {
     }
 
     if (hasError) return
-    console.log('submit signIn')
+
+    axios.post('/users/sign_up', {
+      email,
+      password,
+      nickname: nickName
+    }, {
+      baseURL: 'https://todolist-api.hexschool.io/',
+      headers: { 'Content-Type': 'application/json' }
+    })
+      .then((response) => {
+        if (response.data.status) {
+          navigate('/log_in')
+        } else {
+          console.error('Error:', response.data.message)
+        }
+      })
+      .catch((error) => {
+        console.error('There was an error!', error)
+      })
   }
 
   return (
@@ -82,7 +101,7 @@ export const SignIn: React.FC = () => {
       <StyledInput
         id='passwordAgain'
         label='再次輸入密碼'
-        type='passwordAgain'
+        type='password'
         value={passwordAgain}
         placeholder='請再次輸入密碼'
         errorMessage={passwordAgainError}
@@ -94,7 +113,7 @@ export const SignIn: React.FC = () => {
             name='sign_in'
             type='submit'
             className='button_primary'
-            onClick={handleLogin}
+            onClick={handleSignIn}
           >註冊帳號</button>
         </div>
         <div>

@@ -1,6 +1,7 @@
+import axios from 'axios'
 import React, { useState } from 'react'
-import { StyledInput } from '../components'
 import { useNavigate } from 'react-router-dom'
+import { StyledInput } from '../components'
 
 export const LogIn: React.FC = () => {
   const navigate = useNavigate()
@@ -14,7 +15,7 @@ export const LogIn: React.FC = () => {
   const onEmailChange = (value: string) => setEmail(value)
   const onPasswordChange = (value: string) => setPassword(value)
 
-  const handleLogin = () => {
+  const handleLogIn = () => {
     let hasError = false
     setEmailError('')
     setPasswordError('')
@@ -29,8 +30,23 @@ export const LogIn: React.FC = () => {
     }
 
     if (hasError) return
-    console.log('submit login')
-    navigate('/')
+
+    axios.post('/users/sign_in', { email, password }, {
+      baseURL: 'https://todolist-api.hexschool.io/',
+      headers: { 'Content-Type': 'application/json' }
+    })
+      .then((response) => {
+        if (response.data.status) {
+          const token = response.data.token
+          document.cookie = `token=${token}; path=/; max-age=86400`
+          navigate('/')
+        } else {
+          console.error('Error:', response.data.message)
+        }
+      })
+      .catch((error) => {
+        console.error('There was an error!', error)
+      })
   }
 
   return (
@@ -60,7 +76,7 @@ export const LogIn: React.FC = () => {
             name='log_in'
             type='submit'
             className='button_primary'
-            onClick={handleLogin}
+            onClick={handleLogIn}
           >登入</button>
         </div>
         <div>

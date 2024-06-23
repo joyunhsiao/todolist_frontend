@@ -1,4 +1,5 @@
-import { useState } from 'react'
+import axios from 'axios'
+import { useEffect, useState } from 'react'
 import { Navigate, useNavigate } from 'react-router-dom'
 import Img_Checkbox_False from '../assets/images/checkbox_false.svg'
 import Img_Checkbox_True from '../assets/images/checkbox_true.svg'
@@ -6,13 +7,54 @@ import Img_Close from '../assets/images/close.svg'
 import Img_Empty from '../assets/images/empty.svg'
 import Img_Logo from '../assets/images/logo.svg'
 import Img_Plus from '../assets/images/plus.svg'
+import { getCookie } from '../utils'
 
 export const TodoList: React.FC = () => {
+  const token = getCookie('token')
   const navigate = useNavigate()
-  const hasAuth = true
   const isChecked = true
   const [isListEmpty, setIsListEmpty] = useState<boolean>(false)
-  if (!hasAuth) return <Navigate to='log_in' replace={true} />
+  const [isTokenValid, setIsTokenValid] = useState<boolean | null>(null)
+  
+  const handleLogOut = async () => {
+    axios.post('/users/sign_out', {}, {
+      baseURL: 'https://todolist-api.hexschool.io/',
+      headers: { 'Content-Type': 'application/json', 'authorization': token }
+    })
+      .then((response) => {
+        if (response.data.status) {
+          document.cookie = 'token=; path=/; max-age=0'
+          navigate('/log_in')
+        } else {
+          console.error('Error:', response.data.message)
+        }
+      })
+      .catch((error) => {
+        console.error('There was an error!', error)
+      })
+  }
+
+  useEffect(() => {
+    // Check whether the token passes verification
+    axios.get('/users/checkout', {
+      baseURL: 'https://todolist-api.hexschool.io/',
+      headers: { 'Content-Type': 'application/json', 'authorization': token }
+    })
+      .then((response) => {
+        if (response.data.status) {
+          setIsTokenValid(response.data.status)
+        } else {
+          console.error('Error:', response.data.message)
+        }
+      })
+      .catch((error) => {
+        console.error('There was an error!', error)
+      })
+  }, [token])
+
+  if (isTokenValid === false) {
+    return <Navigate to='/log_in' replace />
+  }
 
   return (
     <>
@@ -22,7 +64,7 @@ export const TodoList: React.FC = () => {
           <img src={Img_Logo} alt='online todo list' />
           <div className='todolist_headerRight'>
             <p>王小明的待辦</p>
-            <button type='button' onClick={() => navigate('/log_in')}>登出</button>
+            <button type='button' onClick={handleLogOut}>登出</button>
           </div>
         </header>
         <main className='todolist_main'>
