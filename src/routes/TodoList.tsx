@@ -89,16 +89,9 @@ export const TodoList: React.FC = () => {
       baseURL: 'https://todolist-api.hexschool.io/',
       headers: { 'Content-Type': 'application/json', 'authorization': token }
     })
-      .then((response) => {
-        if (response.data.status) {
-          document.cookie = 'token=; path=/; max-age=0'
-          navigate('/log_in')
-        } else {
-          console.error('Error:', response.data.message)
-        }
-      })
-      .catch((error) => {
-        console.error('There was an error!', error)
+      .finally(() => {
+        document.cookie = 'token=; path=/; max-age=0'
+        navigate('/log_in')
       })
   }
 
@@ -129,14 +122,20 @@ export const TodoList: React.FC = () => {
           setIsTokenValid(response.data.status)
         } else {
           console.error('Error:', response.data.message)
+          setIsTokenValid(false)
+          document.cookie = 'token=; path=/; max-age=0'
+          navigate('/log_in')
         }
       })
       .catch((error) => {
         console.error('There was an error!', error)
+        setIsTokenValid(false)
+        document.cookie = 'token=; path=/; max-age=0'
+        navigate('/log_in')
       })
 
     getTodos()
-  }, [getTodos, token])
+  }, [getTodos, navigate, token])
 
   if (isTokenValid === false) {
     return <Navigate to='/log_in' replace />
