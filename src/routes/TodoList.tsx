@@ -1,5 +1,5 @@
 import axios from 'axios'
-import { useEffect, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import { Navigate, useNavigate } from 'react-router-dom'
 import Img_Checkbox_False from '../assets/images/checkbox_false.svg'
 import Img_Checkbox_True from '../assets/images/checkbox_true.svg'
@@ -9,13 +9,81 @@ import Img_Logo from '../assets/images/logo.svg'
 import Img_Plus from '../assets/images/plus.svg'
 import { getCookie } from '../utils'
 
+interface TodoItem {
+  id: string;
+  createTime: number;
+  content: string;
+  status: boolean;
+}
+
 export const TodoList: React.FC = () => {
   const token = getCookie('token')
   const navigate = useNavigate()
-  const isChecked = true
-  const [isListEmpty, setIsListEmpty] = useState<boolean>(false)
+  const [listData, setListData] = useState<TodoItem[]>([])
   const [isTokenValid, setIsTokenValid] = useState<boolean | null>(null)
+  const [addTodoValue, setAddTodoValue] = useState<string>('')
+  const [activeTab, setActiveTab] = useState<number>(0)
+
+  const handleTabClick = (event: React.MouseEvent<HTMLAnchorElement>, tabNum: number) => {
+    event.preventDefault()
+    setActiveTab(tabNum)
+  }
+
+  const handleTodoAdd = () => {
+    axios.post('/todos', { 'content': addTodoValue }, {
+      baseURL: 'https://todolist-api.hexschool.io/',
+      headers: { 'Content-Type': 'application/json', 'authorization': token }
+    })
+      .then((response) => {
+        if (response.data.status) {
+          getTodos()
+        } else {
+          console.error('Error:', response.data.message)
+        }
+      })
+      .catch((error) => {
+        console.error('There was an error!', error)
+      })
+  }
+
+  const handleTodoToggle = (id: string) => {
+    axios.patch(`/todos/${id}/toggle`, {}, {
+      baseURL: 'https://todolist-api.hexschool.io/',
+      headers: { 'Content-Type': 'application/json', 'authorization': token }
+    })
+      .then((response) => {
+        if (response.data.status) {
+          getTodos()
+        } else {
+          console.error('Error:', response.data.message)
+        }
+      })
+      .catch((error) => {
+        console.error('There was an error!', error)
+      })
+  }
+
+  const handleClearCompleted = () => {
+    listData.filter(item => item.status).forEach(item => handleTodoDelete(item.id))
+  }
   
+  const handleTodoDelete = (id: string) => {
+    axios.delete(`/todos/${id}`, {
+      baseURL: 'https://todolist-api.hexschool.io/',
+      headers: { 'Content-Type': 'application/json', 'authorization': token }
+    })
+      .then((response) => {
+        if (response.data.status) {
+          getTodos()
+        } else {
+          console.error('Error:', response.data.message)
+        }
+      })
+      .catch((error) => {
+        console.error('There was an error!', error)
+      })
+  }
+
   const handleLogOut = async () => {
     axios.post('/users/sign_out', {}, {
       baseURL: 'https://todolist-api.hexschool.io/',
@@ -34,6 +102,22 @@ export const TodoList: React.FC = () => {
       })
   }
 
+  const getTodos = useCallback(() => axios.get('/todos', {
+    baseURL: 'https://todolist-api.hexschool.io/',
+    headers: { 'Content-Type': 'application/json', 'authorization': token }
+  })
+    .then((response) => {
+      if (response.data.status) {
+        setListData(response.data.data)
+        setAddTodoValue('')
+      } else {
+        console.error('Error:', response.data.message)
+      }
+    })
+    .catch((error) => {
+      console.error('There was an error!', error)
+    }), [token])
+
   useEffect(() => {
     // Check whether the token passes verification
     axios.get('/users/checkout', {
@@ -50,7 +134,9 @@ export const TodoList: React.FC = () => {
       .catch((error) => {
         console.error('There was an error!', error)
       })
-  }, [token])
+
+    getTodos()
+  }, [getTodos, token])
 
   if (isTokenValid === false) {
     return <Navigate to='/log_in' replace />
@@ -63,44 +149,70 @@ export const TodoList: React.FC = () => {
         <header className='todolist_header'>
           <img src={Img_Logo} alt='online todo list' />
           <div className='todolist_headerRight'>
-            <p>王小明的待辦</p>
+            <p>{getCookie('nickname')}的待辦</p>
             <button type='button' onClick={handleLogOut}>登出</button>
           </div>
         </header>
         <main className='todolist_main'>
           <div className='addTodo_box'>
-            <input type='text' name='addTodo_box_input' id='addTodo_input' className='addTodo_input' placeholder='新增待辦事項'/>
-            <button name='addTodo_button' type='submit' className='addTodo_button'>
+            <input type='text' name='addTodo_box_input' id='addTodo_input' className='addTodo_input' placeholder='新增待辦事項' value={addTodoValue} onChange={e => setAddTodoValue(e.target.value)}/>
+            <button name='addTodo_button' type='submit' className='addTodo_button' onClick={handleTodoAdd}>
               <img src={Img_Plus} alt='Add todo' />
             </button>
           </div>
-          {isListEmpty ? <>
+          {listData.length === 0 ? <>
             <p className='noTodo_text'>目前尚無待辦事項</p>
             <img className='noTodo_img' src={Img_Empty} alt='There is currently no to-do list' />
           </> : <>
             <div className='todolist_table'>
               <ul className='todolist_table_header'>
-                <li className='active'>全部</li>
-                <li>待完成</li>
-                <li>已完成</li>
-              </ul>
-              <ul className='todolist_table_body'>
                 <li>
-                  <div className='list_main'>
-                    <label htmlFor='temp'>
-                      <input type='checkbox' name='temp' id='temp' />
-                      <img src={isChecked ? Img_Checkbox_True : Img_Checkbox_False} alt={isChecked ? 'This item is checked' : 'This item is not checked'} />
-                      待辦事項
-                    </label>
-                  </div>
-                  <button type='button'>
-                    <img src={Img_Close} alt='Delete todo' />
-                  </button>
+                  <a
+                    href='#'
+                    className={activeTab === 0 ? 'active' : ''}
+                    onClick={(e) => handleTabClick(e, 0)}
+                  >
+                    全部
+                  </a>
+                </li>
+                <li>
+                  <a
+                    href='#'
+                    className={activeTab === 1 ? 'active' : ''}
+                    onClick={(e) => handleTabClick(e, 1)}
+                  >
+                    待完成
+                  </a>
+                </li>
+                <li>
+                  <a
+                    href='#'
+                    className={activeTab === 2 ? 'active' : ''}
+                    onClick={(e) => handleTabClick(e, 2)}
+                  >
+                    已完成
+                  </a>
                 </li>
               </ul>
+              <ul className='todolist_table_body'>
+                {listData.filter(item => activeTab === 0 ? true : activeTab === 1 ? !item.status : item.status).map(item => 
+                  <li key={item.id}>
+                    <div className='list_main'>
+                      <label htmlFor={item.id}>
+                        <input type='checkbox' name={item.id} id={item.id} onClick={() => handleTodoToggle(item.id)}/>
+                        <img src={item.status ? Img_Checkbox_True : Img_Checkbox_False} alt={item.status ? 'This item is checked' : 'This item is not checked'} />
+                        {item.content}
+                      </label>
+                    </div>
+                    <button type='button' onClick={() => handleTodoDelete(item.id)}>
+                      <img src={Img_Close} alt='Delete todo' />
+                    </button>
+                  </li>
+                )}
+              </ul>
               <div className='todolist_table_footer'>
-                <p>5 個待完成項目</p>
-                <a href='#'>清除已完成項目</a>
+                <p>{listData.length} 個待完成項目</p>
+                <a href='#' onClick={handleClearCompleted}>清除已完成項目</a>
               </div>
             </div>
           </>}

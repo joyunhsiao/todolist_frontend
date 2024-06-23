@@ -93,13 +93,16 @@
     border-bottom: 2px solid colors.$divider-secondary
   li
     flex-grow: 1
+  a
+    display: block
     color: colors.$text-secondary
     font-size: 14px
     font-weight: 700
     line-height: 20px
     text-align: center
     padding: 16px 0 16px 0
-  li.active
+    text-decoration: none
+  a.active
     color: colors.$text-primary
     position: relative
     &::after

@@ -38,7 +38,9 @@ export const LogIn: React.FC = () => {
       .then((response) => {
         if (response.data.status) {
           const token = response.data.token
+          const nickname = response.data.nickname
           document.cookie = `token=${token}; path=/; max-age=86400`
+          document.cookie = `nickname=${nickname}; path=/; max-age=86400`
           navigate('/')
         } else {
           console.error('Error:', response.data.message)

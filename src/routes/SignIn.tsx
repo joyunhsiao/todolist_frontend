@@ -8,24 +8,24 @@ export const SignIn: React.FC = () => {
   const navigate = useNavigate()
 
   const [email, setEmail] = useState<string>('')
-  const [nickName, setNickName] = useState<string>('')
+  const [nickname, setNickname] = useState<string>('')
   const [password, setPassword] = useState<string>('')
   const [passwordAgain, setPasswordAgain] = useState<string>('')
   
   const [emailError, setEmailError] = useState<string>('')
-  const [nickNameError, setNickNameError] = useState<string>('')
+  const [nicknameError, setNicknameError] = useState<string>('')
   const [passwordError, setPasswordError] = useState<string>('')
   const [passwordAgainError, setPasswordAgainError] = useState<string>('')
 
   const onEmailChange = (value: string) => setEmail(value)
-  const onNickNameChange = (value: string) => setNickName(value)
+  const onNicknameChange = (value: string) => setNickname(value)
   const onPasswordChange = (value: string) => setPassword(value)
   const onPasswordAgainChange = (value: string) => setPasswordAgain(value)
 
   const handleSignIn = () => {
     let hasError = false
     setEmailError('')
-    setNickNameError('')
+    setNicknameError('')
     setPasswordError('')
     setPasswordAgainError('')
 
@@ -33,8 +33,8 @@ export const SignIn: React.FC = () => {
       setEmailError('此欄位不可為空')
       hasError = true
     }
-    if (nickName.trim() === '') {
-      setNickNameError('此欄位不可為空')
+    if (nickname.trim() === '') {
+      setNicknameError('此欄位不可為空')
       hasError = true
     }
     if (password.trim() === '') {
@@ -51,7 +51,7 @@ export const SignIn: React.FC = () => {
     axios.post('/users/sign_up', {
       email,
       password,
-      nickname: nickName
+      nickname
     }, {
       baseURL: 'https://todolist-api.hexschool.io/',
       headers: { 'Content-Type': 'application/json' }
@@ -81,13 +81,13 @@ export const SignIn: React.FC = () => {
         onChange={onEmailChange}
       />
       <StyledInput
-        id='nickName'
+        id='nickname'
         label='您的暱稱'
         type='text'
-        value={nickName}
+        value={nickname}
         placeholder='請輸入您的暱稱'
-        errorMessage={nickNameError}
-        onChange={onNickNameChange}
+        errorMessage={nicknameError}
+        onChange={onNicknameChange}
       />
       <StyledInput
         id='password'
