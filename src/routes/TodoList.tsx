@@ -210,7 +210,13 @@ export const TodoList: React.FC = () => {
                 )}
               </ul>
               <div className='todolist_table_footer'>
-                <p>{listData.filter(item => !item.status).length} 個待完成項目</p>
+                <p>
+                  {activeTab === 0
+                    ? `${listData.length} 個項目`
+                    : activeTab === 1
+                      ? `${listData.filter(item => !item.status).length} 個待完成項目`
+                      : `${listData.filter(item => item.status).length} 個已完成項目`}
+                </p>
                 <a href='#' onClick={handleClearCompleted}>清除已完成項目</a>
               </div>
             </div>
